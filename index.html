@@ -121,9 +121,15 @@
       font-size: 18px;
     }
 
+    .timestamp {
+      color: #6b7280;
+      font-size: 12px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
+      transition: 0.2s ease;
     }
 
     th {
@@ -163,12 +169,12 @@
       color: #991b1b;
     }
 
-    .timestamp {
-      color: #6b7280;
-      font-size: 12px;
+    .loading {
+      opacity: 0.5;
     }
 
     @media (max-width: 900px) {
+
       body {
         padding: 18px;
       }
@@ -189,157 +195,414 @@
     }
   </style>
 </head>
+
 <body>
 
   <div class="topbar">
+
     <div class="title">
       <h1>Prod Support Monitor</h1>
       <p>Redshift Data Availability Dashboard</p>
     </div>
 
     <div class="actions">
-      <button class="secondary">View Load Logs</button>
-      <button class="primary">Refresh Data</button>
+      <button class="secondary">
+        View Load Logs
+      </button>
+
+      <button class="primary">
+        Refresh Data
+      </button>
     </div>
+
   </div>
 
   <div class="stats-grid">
+
     <div class="card">
       <div class="card-label">Tables Monitored</div>
-      <div class="card-value">11</div>
+      <div class="card-value" id="table-count">11</div>
     </div>
 
     <div class="card">
       <div class="card-label">Healthy Loads</div>
-      <div class="card-value good">9</div>
+      <div class="card-value good" id="healthy-count">9</div>
     </div>
 
     <div class="card">
       <div class="card-label">Alerts</div>
-      <div class="card-value warning">2</div>
+      <div class="card-value warning" id="alert-count">2</div>
     </div>
 
     <div class="card">
       <div class="card-label">Last Refresh</div>
-      <div class="card-value" style="font-size:20px;">
+      <div class="card-value" style="font-size:20px;" id="last-refresh">
         09:42 AM
       </div>
     </div>
+
   </div>
 
   <div class="table-wrapper">
 
     <div class="table-header">
       <div>
-        <h2>Data Availability</h2>
+        <h2 id="table-title">Data Availability</h2>
+
         <div class="timestamp">
           Synced from Redshift
         </div>
       </div>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Load Frequency</th>
-          <th>Table Group</th>
-          <th>Table Name</th>
-          <th>Last Load</th>
-          <th>Alert</th>
-          <th>Days Since Last</th>
-          <th>Max Updated Date</th>
-          <th>Source</th>
-          <th>Rows Inserted</th>
-          <th>Rows Updated</th>
-          <th>Rows Deleted</th>
-        </tr>
-      </thead>
+    <table id="data-table"></table>
 
-      <tbody>
-
-        <tr>
-          <td>Daily</td>
-          <td>Foundation</td>
-          <td>dim_customer</td>
-          <td>2026-05-13 06:10</td>
-          <td>
-            <span class="badge badge-good">OK</span>
-          </td>
-          <td>0</td>
-          <td>2026-05-13</td>
-          <td>Oracle</td>
-          <td>125430</td>
-          <td>2451</td>
-          <td>0</td>
-        </tr>
-
-        <tr>
-          <td>Daily</td>
-          <td>POS</td>
-          <td>mrt_sales_basket_item</td>
-          <td>2026-05-13 07:01</td>
-          <td>
-            <span class="badge badge-good">OK</span>
-          </td>
-          <td>0</td>
-          <td>2026-05-13</td>
-          <td>SAP</td>
-          <td>2356721</td>
-          <td>0</td>
-          <td>0</td>
-        </tr>
-
-        <tr>
-          <td>Daily</td>
-          <td>WFS</td>
-          <td>fnd_wfs_crd_txn_dly</td>
-          <td>2026-05-11 23:40</td>
-          <td>
-            <span class="badge badge-bad">DELAYED</span>
-          </td>
-          <td>2</td>
-          <td>2026-05-11</td>
-          <td>Oracle</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-        </tr>
-
-        <tr>
-          <td>Daily</td>
-          <td>WFS</td>
-          <td>fnd_wfs_cust_perf_60dy</td>
-          <td>2026-05-12 02:11</td>
-          <td>
-            <span class="badge badge-bad">WARNING</span>
-          </td>
-          <td>1</td>
-          <td>2026-05-12</td>
-          <td>Oracle</td>
-          <td>14220</td>
-          <td>451</td>
-          <td>11</td>
-        </tr>
-
-        <tr>
-          <td>Daily</td>
-          <td>Location</td>
-          <td>dim_location</td>
-          <td>2026-05-13 05:31</td>
-          <td>
-            <span class="badge badge-good">OK</span>
-          </td>
-          <td>0</td>
-          <td>2026-05-13</td>
-          <td>MDM</td>
-          <td>14</td>
-          <td>3</td>
-          <td>0</td>
-        </tr>
-
-      </tbody>
-    </table>
   </div>
+
+  <script>
+
+    const availabilityData = [
+      {
+        load_freq: "Daily",
+        table_group: "Foundation",
+        tablename: "dim_customer",
+        last_load: "2026-05-13 06:10",
+        alert: "OK",
+        days_since_last: 0,
+        max_last_updated_date: "2026-05-13",
+        source: "Oracle",
+        rows_ins: 125430,
+        rows_upd: 2451,
+        rows_del: 0
+      },
+      {
+        load_freq: "Daily",
+        table_group: "POS",
+        tablename: "mrt_sales_basket_item",
+        last_load: "2026-05-13 07:01",
+        alert: "OK",
+        days_since_last: 0,
+        max_last_updated_date: "2026-05-13",
+        source: "SAP",
+        rows_ins: 2356721,
+        rows_upd: 0,
+        rows_del: 0
+      },
+      {
+        load_freq: "Daily",
+        table_group: "WFS",
+        tablename: "fnd_wfs_crd_txn_dly",
+        last_load: "2026-05-11 23:40",
+        alert: "DELAYED",
+        days_since_last: 2,
+        max_last_updated_date: "2026-05-11",
+        source: "Oracle",
+        rows_ins: 0,
+        rows_upd: 0,
+        rows_del: 0
+      },
+      {
+        load_freq: "Daily",
+        table_group: "WFS",
+        tablename: "fnd_wfs_cust_perf_60dy",
+        last_load: "2026-05-12 02:11",
+        alert: "WARNING",
+        days_since_last: 1,
+        max_last_updated_date: "2026-05-12",
+        source: "Oracle",
+        rows_ins: 14220,
+        rows_upd: 451,
+        rows_del: 11
+      },
+      {
+        load_freq: "Daily",
+        table_group: "Location",
+        tablename: "dim_location",
+        last_load: "2026-05-13 05:31",
+        alert: "OK",
+        days_since_last: 0,
+        max_last_updated_date: "2026-05-13",
+        source: "MDM",
+        rows_ins: 14,
+        rows_upd: 3,
+        rows_del: 0
+      }
+    ];
+
+    const logsData = [
+      {
+        proc_name: "sp_ora_load",
+        tablename: "fnd_wfs_crd_txn_dly",
+        status: "SUCCESS",
+        duration: "00:04:12",
+        inserted_rows: 154211,
+        start_time: "2026-05-13 07:01",
+        end_time: "2026-05-13 07:05"
+      },
+      {
+        proc_name: "sp_ora_load",
+        tablename: "dim_customer",
+        status: "SUCCESS",
+        duration: "00:02:44",
+        inserted_rows: 125430,
+        start_time: "2026-05-13 06:10",
+        end_time: "2026-05-13 06:13"
+      },
+      {
+        proc_name: "sp_ora_load",
+        tablename: "fnd_wfs_crd_txn_dly",
+        status: "FAILED",
+        duration: "00:00:51",
+        inserted_rows: 0,
+        start_time: "2026-05-11 23:40",
+        end_time: "2026-05-11 23:41"
+      }
+    ];
+
+    const table = document.getElementById("data-table");
+    const refreshBtn = document.querySelector(".primary");
+    const logsBtn = document.querySelector(".secondary");
+    const timestamp = document.querySelector(".timestamp");
+    const tableTitle = document.getElementById("table-title");
+
+    let showingLogs = false;
+
+    function updateStats() {
+
+      const healthy = availabilityData.filter(
+        item => item.alert === "OK"
+      ).length;
+
+      const alerts = availabilityData.length - healthy;
+
+      document.getElementById("healthy-count").innerText = healthy;
+      document.getElementById("alert-count").innerText = alerts;
+
+      document.getElementById("last-refresh").innerText =
+        new Date().toLocaleTimeString();
+
+    }
+
+    function randomizeData() {
+
+      availabilityData.forEach(item => {
+
+        const statuses = [
+          "OK",
+          "OK",
+          "OK",
+          "WARNING",
+          "DELAYED"
+        ];
+
+        item.alert =
+          statuses[Math.floor(Math.random() * statuses.length)];
+
+        item.rows_ins =
+          Math.floor(Math.random() * 2500000);
+
+        item.rows_upd =
+          Math.floor(Math.random() * 10000);
+
+        item.rows_del =
+          Math.floor(Math.random() * 100);
+
+        item.days_since_last =
+          item.alert === "OK"
+            ? 0
+            : Math.floor(Math.random() * 3) + 1;
+
+        item.last_load =
+          new Date().toLocaleString();
+
+      });
+
+      updateStats();
+    }
+
+    function renderAvailability() {
+
+      tableTitle.innerText = "Data Availability";
+
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Load Frequency</th>
+            <th>Table Group</th>
+            <th>Table Name</th>
+            <th>Last Load</th>
+            <th>Alert</th>
+            <th>Days Since Last</th>
+            <th>Max Updated Date</th>
+            <th>Source</th>
+            <th>Rows Inserted</th>
+            <th>Rows Updated</th>
+            <th>Rows Deleted</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          ${availabilityData.map(row => `
+
+            <tr>
+
+              <td>${row.load_freq}</td>
+
+              <td>${row.table_group}</td>
+
+              <td>${row.tablename}</td>
+
+              <td>${row.last_load}</td>
+
+              <td>
+                <span class="badge ${
+                  row.alert === "OK"
+                    ? "badge-good"
+                    : "badge-bad"
+                }">
+                  ${row.alert}
+                </span>
+              </td>
+
+              <td>${row.days_since_last}</td>
+
+              <td>${row.max_last_updated_date}</td>
+
+              <td>${row.source}</td>
+
+              <td>${row.rows_ins.toLocaleString()}</td>
+
+              <td>${row.rows_upd.toLocaleString()}</td>
+
+              <td>${row.rows_del.toLocaleString()}</td>
+
+            </tr>
+
+          `).join("")}
+
+        </tbody>
+      `;
+
+      timestamp.innerHTML =
+        `Synced from Redshift • ${new Date().toLocaleTimeString()}`;
+    }
+
+    function renderLogs() {
+
+      tableTitle.innerText = "DW Load Logs";
+
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Procedure</th>
+            <th>Table</th>
+            <th>Status</th>
+            <th>Duration</th>
+            <th>Inserted Rows</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          ${logsData.map(log => `
+
+            <tr>
+
+              <td>${log.proc_name}</td>
+
+              <td>${log.tablename}</td>
+
+              <td>
+                <span class="badge ${
+                  log.status === "SUCCESS"
+                    ? "badge-good"
+                    : "badge-bad"
+                }">
+                  ${log.status}
+                </span>
+              </td>
+
+              <td>${log.duration}</td>
+
+              <td>${log.inserted_rows.toLocaleString()}</td>
+
+              <td>${log.start_time}</td>
+
+              <td>${log.end_time}</td>
+
+            </tr>
+
+          `).join("")}
+
+        </tbody>
+      `;
+
+      timestamp.innerHTML =
+        `Querying dw_admin.dw_load_log • ${new Date().toLocaleTimeString()}`;
+    }
+
+    refreshBtn.addEventListener("click", () => {
+
+      refreshBtn.innerText = "Refreshing...";
+      refreshBtn.disabled = true;
+
+      table.classList.add("loading");
+
+      setTimeout(() => {
+
+        randomizeData();
+
+        renderAvailability();
+
+        table.classList.remove("loading");
+
+        refreshBtn.innerText = "Refresh Data";
+        refreshBtn.disabled = false;
+
+      }, 1800);
+
+    });
+
+    logsBtn.addEventListener("click", () => {
+
+      showingLogs = !showingLogs;
+
+      if (showingLogs) {
+
+        renderLogs();
+
+        logsBtn.innerText = "View Availability";
+
+      } else {
+
+        renderAvailability();
+
+        logsBtn.innerText = "View Load Logs";
+
+      }
+
+    });
+
+    setInterval(() => {
+
+      if (!showingLogs) {
+
+        randomizeData();
+
+        renderAvailability();
+
+      }
+
+    }, 15000);
+
+    updateStats();
+
+    renderAvailability();
+
+  </script>
 
 </body>
 </html>
