@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prod Support Monitor</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f3f4f6;
+      color: #111827;
+      padding: 32px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .title h1 {
+      font-size: 30px;
+    }
+
+    .title p {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    button {
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s ease;
+    }
+
+    .primary {
+      background: #111827;
+      color: white;
+    }
+
+    .secondary {
+      background: white;
+      border: 1px solid #d1d5db;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+
+    .card-label {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    .card-value {
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .good {
+      color: #16a34a;
+    }
+
+    .warning {
+      color: #dc2626;
+    }
+
+    .table-wrapper {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+
+    .table-header {
+      padding: 20px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .table-header h2 {
+      font-size: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #111827;
+      color: white;
+      text-align: left;
+      padding: 14px;
+      font-size: 13px;
+    }
+
+    td {
+      padding: 14px;
+      border-bottom: 1px solid #f1f1f1;
+      font-size: 14px;
+    }
+
+    tr:hover {
+      background: #f9fafb;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .badge-good {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-bad {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .timestamp {
+      color: #6b7280;
+      font-size: 12px;
+    }
+
+    @media (max-width: 900px) {
+      body {
+        padding: 18px;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .table-wrapper {
+        overflow-x: auto;
+      }
+
+      table {
+        min-width: 1100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="title">
+      <h1>Prod Support Monitor</h1>
+      <p>Redshift Data Availability Dashboard</p>
+    </div>
+
+    <div class="actions">
+      <button class="secondary">View Load Logs</button>
+      <button class="primary">Refresh Data</button>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="card">
+      <div class="card-label">Tables Monitored</div>
+      <div class="card-value">11</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Healthy Loads</div>
+      <div class="card-value good">9</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Alerts</div>
+      <div class="card-value warning">2</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Last Refresh</div>
+      <div class="card-value" style="font-size:20px;">
+        09:42 AM
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+
+    <div class="table-header">
+      <div>
+        <h2>Data Availability</h2>
+        <div class="timestamp">
+          Synced from Redshift
+        </div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Load Frequency</th>
+          <th>Table Group</th>
+          <th>Table Name</th>
+          <th>Last Load</th>
+          <th>Alert</th>
+          <th>Days Since Last</th>
+          <th>Max Updated Date</th>
+          <th>Source</th>
+          <th>Rows Inserted</th>
+          <th>Rows Updated</th>
+          <th>Rows Deleted</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr>
+          <td>Daily</td>
+          <td>Foundation</td>
+          <td>dim_customer</td>
+          <td>2026-05-13 06:10</td>
+          <td>
+            <span class="badge badge-good">OK</span>
+          </td>
+          <td>0</td>
+          <td>2026-05-13</td>
+          <td>Oracle</td>
+          <td>125430</td>
+          <td>2451</td>
+          <td>0</td>
+        </tr>
+
+        <tr>
+          <td>Daily</td>
+          <td>POS</td>
+          <td>mrt_sales_basket_item</td>
+          <td>2026-05-13 07:01</td>
+          <td>
+            <span class="badge badge-good">OK</span>
+          </td>
+          <td>0</td>
+          <td>2026-05-13</td>
+          <td>SAP</td>
+          <td>2356721</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+
+        <tr>
+          <td>Daily</td>
+          <td>WFS</td>
+          <td>fnd_wfs_crd_txn_dly</td>
+          <td>2026-05-11 23:40</td>
+          <td>
+            <span class="badge badge-bad">DELAYED</span>
+          </td>
+          <td>2</td>
+          <td>2026-05-11</td>
+          <td>Oracle</td>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+
+        <tr>
+          <td>Daily</td>
+          <td>WFS</td>
+          <td>fnd_wfs_cust_perf_60dy</td>
+          <td>2026-05-12 02:11</td>
+          <td>
+            <span class="badge badge-bad">WARNING</span>
+          </td>
+          <td>1</td>
+          <td>2026-05-12</td>
+          <td>Oracle</td>
+          <td>14220</td>
+          <td>451</td>
+          <td>11</td>
+        </tr>
+
+        <tr>
+          <td>Daily</td>
+          <td>Location</td>
+          <td>dim_location</td>
+          <td>2026-05-13 05:31</td>
+          <td>
+            <span class="badge badge-good">OK</span>
+          </td>
+          <td>0</td>
+          <td>2026-05-13</td>
+          <td>MDM</td>
+          <td>14</td>
+          <td>3</td>
+          <td>0</td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>
