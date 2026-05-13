@@ -22,18 +22,14 @@
     .topbar {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
+      gap: 24px;
       margin-bottom: 24px;
-    }
-
-    .title {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
     }
 
     .title h1 {
       font-size: 30px;
+      margin-bottom: 4px;
     }
 
     .title p {
@@ -41,9 +37,41 @@
       font-size: 14px;
     }
 
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 14px;
+    }
+
+    .source-toggle {
+      display: flex;
+      background: white;
+      padding: 5px;
+      border: 1px solid #d1d5db;
+      border-radius: 999px;
+      gap: 4px;
+    }
+
+    .source-toggle button {
+      padding: 9px 20px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .source-toggle button.active {
+      background: #111827;
+      color: white;
+    }
+
     .actions {
       display: flex;
       gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     button {
@@ -102,6 +130,25 @@
       color: #dc2626;
     }
 
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      background: white;
+      border: 1px solid #d1d5db;
+      padding: 12px 18px;
+      border-radius: 12px;
+    }
+
+    .tab.active {
+      background: #111827;
+      color: white;
+    }
+
     .table-wrapper {
       background: white;
       border-radius: 20px;
@@ -124,6 +171,7 @@
     .timestamp {
       color: #6b7280;
       font-size: 12px;
+      margin-top: 4px;
     }
 
     table {
@@ -169,20 +217,26 @@
       color: #991b1b;
     }
 
+    .badge-neutral {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
     .loading {
       opacity: 0.5;
     }
 
     @media (max-width: 900px) {
-
       body {
         padding: 18px;
       }
 
       .topbar {
         flex-direction: column;
+      }
+
+      .controls {
         align-items: flex-start;
-        gap: 16px;
       }
 
       .table-wrapper {
@@ -199,70 +253,70 @@
 <body>
 
   <div class="topbar">
-
     <div class="title">
       <h1>Prod Support Monitor</h1>
       <p>Redshift Data Availability Dashboard</p>
     </div>
 
-    <div class="actions">
-      <button class="secondary">
-        View Load Logs
-      </button>
+    <div class="controls">
+      <div class="source-toggle">
+        <button id="oracle-toggle" class="active">Oracle</button>
+        <button id="rs-toggle">Redshift</button>
+      </div>
 
-      <button class="primary">
-        Refresh Data
-      </button>
+      <div class="actions">
+        <button class="secondary" id="logs-btn">View Load Logs</button>
+        <button class="primary" id="refresh-btn">Refresh Data</button>
+      </div>
     </div>
-
   </div>
 
   <div class="stats-grid">
-
     <div class="card">
       <div class="card-label">Tables Monitored</div>
-      <div class="card-value" id="table-count">11</div>
+      <div class="card-value" id="table-count">0</div>
     </div>
 
     <div class="card">
       <div class="card-label">Healthy Loads</div>
-      <div class="card-value good" id="healthy-count">9</div>
+      <div class="card-value good" id="healthy-count">0</div>
     </div>
 
     <div class="card">
       <div class="card-label">Alerts</div>
-      <div class="card-value warning" id="alert-count">2</div>
+      <div class="card-value warning" id="alert-count">0</div>
     </div>
 
     <div class="card">
       <div class="card-label">Last Refresh</div>
-      <div class="card-value" style="font-size:20px;" id="last-refresh">
-        09:42 AM
-      </div>
+      <div class="card-value" style="font-size:20px;" id="last-refresh">--</div>
     </div>
+  </div>
 
+  <div class="tabs">
+    <button class="tab active" data-tab="availability">Data Availability</button>
+    <button class="tab" data-tab="loads">Load Timing</button>
+    <button class="tab" data-tab="logs">Load Logs</button>
   </div>
 
   <div class="table-wrapper">
-
     <div class="table-header">
       <div>
         <h2 id="table-title">Data Availability</h2>
-
-        <div class="timestamp">
-          Synced from Redshift
-        </div>
+        <div class="timestamp" id="timestamp">Synced from Redshift</div>
       </div>
     </div>
 
     <table id="data-table"></table>
-
   </div>
 
   <script>
+    let activeSource = "Oracle";
+    let activeTab = "availability";
 
     const availabilityData = [
       {
+        source_system: "Oracle",
         load_freq: "Daily",
         table_group: "Foundation",
         tablename: "dim_customer",
@@ -276,19 +330,7 @@
         rows_del: 0
       },
       {
-        load_freq: "Daily",
-        table_group: "POS",
-        tablename: "mrt_sales_basket_item",
-        last_load: "2026-05-13 07:01",
-        alert: "OK",
-        days_since_last: 0,
-        max_last_updated_date: "2026-05-13",
-        source: "SAP",
-        rows_ins: 2356721,
-        rows_upd: 0,
-        rows_del: 0
-      },
-      {
+        source_system: "Oracle",
         load_freq: "Daily",
         table_group: "WFS",
         tablename: "fnd_wfs_crd_txn_dly",
@@ -302,19 +344,7 @@
         rows_del: 0
       },
       {
-        load_freq: "Daily",
-        table_group: "WFS",
-        tablename: "fnd_wfs_cust_perf_60dy",
-        last_load: "2026-05-12 02:11",
-        alert: "WARNING",
-        days_since_last: 1,
-        max_last_updated_date: "2026-05-12",
-        source: "Oracle",
-        rows_ins: 14220,
-        rows_upd: 451,
-        rows_del: 11
-      },
-      {
+        source_system: "Oracle",
         load_freq: "Daily",
         table_group: "Location",
         tablename: "dim_location",
@@ -326,20 +356,93 @@
         rows_ins: 14,
         rows_upd: 3,
         rows_del: 0
+      },
+      {
+        source_system: "Redshift",
+        load_freq: "Daily",
+        table_group: "POS",
+        tablename: "mrt_sales_basket_item",
+        last_load: "2026-05-13 07:01",
+        alert: "OK",
+        days_since_last: 0,
+        max_last_updated_date: "2026-05-13",
+        source: "Redshift",
+        rows_ins: 2356721,
+        rows_upd: 0,
+        rows_del: 0
+      },
+      {
+        source_system: "Redshift",
+        load_freq: "Daily",
+        table_group: "Digital",
+        tablename: "mrt_sales_digital_basket",
+        last_load: "2026-05-12 22:15",
+        alert: "WARNING",
+        days_since_last: 1,
+        max_last_updated_date: "2026-05-12",
+        source: "Redshift",
+        rows_ins: 88321,
+        rows_upd: 401,
+        rows_del: 0
+      }
+    ];
+
+    const loadTimingData = [
+      {
+        source_system: "Oracle",
+        tablename: "dim_customer",
+        expected_time: "06:00",
+        current_avg_time: "06:12",
+        max_load_time: "06:45",
+        status: "OK"
+      },
+      {
+        source_system: "Oracle",
+        tablename: "fnd_wfs_crd_txn_dly",
+        expected_time: "23:30",
+        current_avg_time: "23:55",
+        max_load_time: "02:10",
+        status: "DELAYED"
+      },
+      {
+        source_system: "Oracle",
+        tablename: "dim_location",
+        expected_time: "05:00",
+        current_avg_time: "05:23",
+        max_load_time: "05:55",
+        status: "OK"
+      },
+      {
+        source_system: "Redshift",
+        tablename: "mrt_sales_basket_item",
+        expected_time: "07:00",
+        current_avg_time: "07:18",
+        max_load_time: "08:05",
+        status: "OK"
+      },
+      {
+        source_system: "Redshift",
+        tablename: "mrt_sales_digital_basket",
+        expected_time: "22:00",
+        current_avg_time: "22:42",
+        max_load_time: "23:30",
+        status: "WARNING"
       }
     ];
 
     const logsData = [
       {
+        source_system: "Oracle",
         proc_name: "sp_ora_load",
         tablename: "fnd_wfs_crd_txn_dly",
-        status: "SUCCESS",
-        duration: "00:04:12",
-        inserted_rows: 154211,
-        start_time: "2026-05-13 07:01",
-        end_time: "2026-05-13 07:05"
+        status: "FAILED",
+        duration: "00:00:51",
+        inserted_rows: 0,
+        start_time: "2026-05-11 23:40",
+        end_time: "2026-05-11 23:41"
       },
       {
+        source_system: "Oracle",
         proc_name: "sp_ora_load",
         tablename: "dim_customer",
         status: "SUCCESS",
@@ -349,80 +452,50 @@
         end_time: "2026-05-13 06:13"
       },
       {
-        proc_name: "sp_ora_load",
-        tablename: "fnd_wfs_crd_txn_dly",
-        status: "FAILED",
-        duration: "00:00:51",
-        inserted_rows: 0,
-        start_time: "2026-05-11 23:40",
-        end_time: "2026-05-11 23:41"
+        source_system: "Redshift",
+        proc_name: "sp_rs_transform",
+        tablename: "mrt_sales_basket_item",
+        status: "SUCCESS",
+        duration: "00:04:12",
+        inserted_rows: 2356721,
+        start_time: "2026-05-13 07:01",
+        end_time: "2026-05-13 07:05"
       }
     ];
 
     const table = document.getElementById("data-table");
-    const refreshBtn = document.querySelector(".primary");
-    const logsBtn = document.querySelector(".secondary");
-    const timestamp = document.querySelector(".timestamp");
     const tableTitle = document.getElementById("table-title");
+    const timestamp = document.getElementById("timestamp");
+    const refreshBtn = document.getElementById("refresh-btn");
+    const logsBtn = document.getElementById("logs-btn");
+    const oracleToggle = document.getElementById("oracle-toggle");
+    const rsToggle = document.getElementById("rs-toggle");
+    const tabs = document.querySelectorAll(".tab");
 
-    let showingLogs = false;
-
-    function updateStats() {
-
-      const healthy = availabilityData.filter(
-        item => item.alert === "OK"
-      ).length;
-
-      const alerts = availabilityData.length - healthy;
-
-      document.getElementById("healthy-count").innerText = healthy;
-      document.getElementById("alert-count").innerText = alerts;
-
-      document.getElementById("last-refresh").innerText =
-        new Date().toLocaleTimeString();
-
+    function filtered(data) {
+      return data.filter(row => row.source_system === activeSource);
     }
 
-    function randomizeData() {
+    function badgeClass(value) {
+      return value === "OK" || value === "SUCCESS"
+        ? "badge-good"
+        : "badge-bad";
+    }
 
-      availabilityData.forEach(item => {
+    function updateStats() {
+      const rows = filtered(availabilityData);
+      const healthy = rows.filter(row => row.alert === "OK").length;
+      const alerts = rows.length - healthy;
 
-        const statuses = [
-          "OK",
-          "OK",
-          "OK",
-          "WARNING",
-          "DELAYED"
-        ];
-
-        item.alert =
-          statuses[Math.floor(Math.random() * statuses.length)];
-
-        item.rows_ins =
-          Math.floor(Math.random() * 2500000);
-
-        item.rows_upd =
-          Math.floor(Math.random() * 10000);
-
-        item.rows_del =
-          Math.floor(Math.random() * 100);
-
-        item.days_since_last =
-          item.alert === "OK"
-            ? 0
-            : Math.floor(Math.random() * 3) + 1;
-
-        item.last_load =
-          new Date().toLocaleString();
-
-      });
-
-      updateStats();
+      document.getElementById("table-count").innerText = rows.length;
+      document.getElementById("healthy-count").innerText = healthy;
+      document.getElementById("alert-count").innerText = alerts;
+      document.getElementById("last-refresh").innerText = new Date().toLocaleTimeString();
     }
 
     function renderAvailability() {
-
-      tableTitle.innerText = "Data Availability";
+      const rows = filtered(availabilityData);
+      tableTitle.innerText = `${activeSource} Data Availability`;
 
       table.innerHTML = `
         <thead>
@@ -440,57 +513,61 @@
             <th>Rows Deleted</th>
           </tr>
         </thead>
-
         <tbody>
-
-          ${availabilityData.map(row => `
-
+          ${rows.map(row => `
             <tr>
-
               <td>${row.load_freq}</td>
-
               <td>${row.table_group}</td>
-
               <td>${row.tablename}</td>
-
               <td>${row.last_load}</td>
-
-              <td>
-                <span class="badge ${
-                  row.alert === "OK"
-                    ? "badge-good"
-                    : "badge-bad"
-                }">
-                  ${row.alert}
-                </span>
-              </td>
-
+              <td><span class="badge ${badgeClass(row.alert)}">${row.alert}</span></td>
               <td>${row.days_since_last}</td>
-
               <td>${row.max_last_updated_date}</td>
-
               <td>${row.source}</td>
-
               <td>${row.rows_ins.toLocaleString()}</td>
-
               <td>${row.rows_upd.toLocaleString()}</td>
-
               <td>${row.rows_del.toLocaleString()}</td>
-
             </tr>
-
           `).join("")}
-
         </tbody>
       `;
 
-      timestamp.innerHTML =
-        `Synced from Redshift • ${new Date().toLocaleTimeString()}`;
+      timestamp.innerText = `${activeSource} availability sync • ${new Date().toLocaleTimeString()}`;
+    }
+
+    function renderLoadTiming() {
+      const rows = filtered(loadTimingData);
+      tableTitle.innerText = `${activeSource} Load Timing`;
+
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Table Name</th>
+            <th>Expected Load/Update Time</th>
+            <th>Current Avg Load/Update Time</th>
+            <th>Max Load/Update Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(row => `
+            <tr>
+              <td>${row.tablename}</td>
+              <td>${row.expected_time}</td>
+              <td>${row.current_avg_time}</td>
+              <td>${row.max_load_time}</td>
+              <td><span class="badge ${badgeClass(row.status)}">${row.status}</span></td>
+            </tr>
+          `).join("")}
+        </tbody>
+      `;
+
+      timestamp.innerText = `${activeSource} timing rules • ${new Date().toLocaleTimeString()}`;
     }
 
     function renderLogs() {
-
-      tableTitle.innerText = "DW Load Logs";
+      const rows = filtered(logsData);
+      tableTitle.innerText = `${activeSource} DW Load Logs`;
 
       table.innerHTML = `
         <thead>
@@ -504,104 +581,98 @@
             <th>End Time</th>
           </tr>
         </thead>
-
         <tbody>
-
-          ${logsData.map(log => `
-
+          ${rows.map(log => `
             <tr>
-
               <td>${log.proc_name}</td>
-
               <td>${log.tablename}</td>
-
-              <td>
-                <span class="badge ${
-                  log.status === "SUCCESS"
-                    ? "badge-good"
-                    : "badge-bad"
-                }">
-                  ${log.status}
-                </span>
-              </td>
-
+              <td><span class="badge ${badgeClass(log.status)}">${log.status}</span></td>
               <td>${log.duration}</td>
-
               <td>${log.inserted_rows.toLocaleString()}</td>
-
               <td>${log.start_time}</td>
-
               <td>${log.end_time}</td>
-
             </tr>
-
           `).join("")}
-
         </tbody>
       `;
 
-      timestamp.innerHTML =
-        `Querying dw_admin.dw_load_log • ${new Date().toLocaleTimeString()}`;
+      timestamp.innerText = `${activeSource} load log query • ${new Date().toLocaleTimeString()}`;
     }
 
-    refreshBtn.addEventListener("click", () => {
+    function renderPage() {
+      updateStats();
 
-      refreshBtn.innerText = "Refreshing...";
-      refreshBtn.disabled = true;
+      if (activeTab === "availability") renderAvailability();
+      if (activeTab === "loads") renderLoadTiming();
+      if (activeTab === "logs") renderLogs();
+    }
 
-      table.classList.add("loading");
+    function setSource(source) {
+      activeSource = source;
 
-      setTimeout(() => {
+      oracleToggle.classList.toggle("active", source === "Oracle");
+      rsToggle.classList.toggle("active", source === "Redshift");
 
-        randomizeData();
+      renderPage();
+    }
 
-        renderAvailability();
+    function randomizeData() {
+      filtered(availabilityData).forEach(item => {
+        const statuses = ["OK", "OK", "OK", "WARNING", "DELAYED"];
 
-        table.classList.remove("loading");
+        item.alert = statuses[Math.floor(Math.random() * statuses.length)];
+        item.days_since_last = item.alert === "OK" ? 0 : Math.floor(Math.random() * 3) + 1;
+        item.rows_ins = Math.floor(Math.random() * 2500000);
+        item.rows_upd = Math.floor(Math.random() * 10000);
+        item.rows_del = Math.floor(Math.random() * 100);
+        item.last_load = new Date().toLocaleString();
+      });
+    }
 
-        refreshBtn.innerText = "Refresh Data";
-        refreshBtn.disabled = false;
+    oracleToggle.addEventListener("click", () => setSource("Oracle"));
+    rsToggle.addEventListener("click", () => setSource("Redshift"));
 
-      }, 1800);
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        activeTab = tab.dataset.tab;
 
+        tabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+
+        renderPage();
+      });
     });
 
     logsBtn.addEventListener("click", () => {
+      activeTab = "logs";
 
-      showingLogs = !showingLogs;
+      tabs.forEach(t => t.classList.remove("active"));
+      document.querySelector('[data-tab="logs"]').classList.add("active");
 
-      if (showingLogs) {
+      renderPage();
+    });
 
-        renderLogs();
+    refreshBtn.addEventListener("click", () => {
+      refreshBtn.innerText = "Refreshing...";
+      refreshBtn.disabled = true;
+      table.classList.add("loading");
 
-        logsBtn.innerText = "View Availability";
+      setTimeout(() => {
+        randomizeData();
+        renderPage();
 
-      } else {
-
-        renderAvailability();
-
-        logsBtn.innerText = "View Load Logs";
-
-      }
-
+        refreshBtn.innerText = "Refresh Data";
+        refreshBtn.disabled = false;
+        table.classList.remove("loading");
+      }, 1200);
     });
 
     setInterval(() => {
-
-      if (!showingLogs) {
-
-        randomizeData();
-
-        renderAvailability();
-
-      }
-
+      randomizeData();
+      renderPage();
     }, 15000);
 
-    updateStats();
-
-    renderAvailability();
-
+    renderPage();
   </script>
 
 </body>
