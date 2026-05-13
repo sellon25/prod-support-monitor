@@ -315,153 +315,336 @@
     let activeTab = "availability";
 
     const availabilityData = [
-      {
-        source_system: "Oracle",
-        load_freq: "Daily",
-        table_group: "Foundation",
-        tablename: "dim_customer",
-        last_load: "2026-05-13 06:10",
-        alert: "OK",
-        days_since_last: 0,
-        max_last_updated_date: "2026-05-13",
-        source: "Oracle",
-        rows_ins: 125430,
-        rows_upd: 2451,
-        rows_del: 0
-      },
-      {
-        source_system: "Oracle",
-        load_freq: "Daily",
-        table_group: "WFS",
-        tablename: "fnd_wfs_crd_txn_dly",
-        last_load: "2026-05-11 23:40",
-        alert: "DELAYED",
-        days_since_last: 2,
-        max_last_updated_date: "2026-05-11",
-        source: "Oracle",
-        rows_ins: 0,
-        rows_upd: 0,
-        rows_del: 0
-      },
-      {
-        source_system: "Oracle",
-        load_freq: "Daily",
-        table_group: "Location",
-        tablename: "dim_location",
-        last_load: "2026-05-13 05:31",
-        alert: "OK",
-        days_since_last: 0,
-        max_last_updated_date: "2026-05-13",
-        source: "MDM",
-        rows_ins: 14,
-        rows_upd: 3,
-        rows_del: 0
-      },
-      {
-        source_system: "Redshift",
-        load_freq: "Daily",
-        table_group: "POS",
-        tablename: "mrt_sales_basket_item",
-        last_load: "2026-05-13 07:01",
-        alert: "OK",
-        days_since_last: 0,
-        max_last_updated_date: "2026-05-13",
-        source: "Redshift",
-        rows_ins: 2356721,
-        rows_upd: 0,
-        rows_del: 0
-      },
-      {
-        source_system: "Redshift",
-        load_freq: "Daily",
-        table_group: "Digital",
-        tablename: "mrt_sales_digital_basket",
-        last_load: "2026-05-12 22:15",
-        alert: "WARNING",
-        days_since_last: 1,
-        max_last_updated_date: "2026-05-12",
-        source: "Redshift",
-        rows_ins: 88321,
-        rows_upd: 401,
-        rows_del: 0
-      }
-    ];
+  {
+    source_system: "Oracle",
+    load_freq: "Daily",
+    table_group: "Foundation",
+    tablename: "dim_customer",
+    last_load: "2026-05-13 06:10",
+    alert: "OK",
+    days_since_last: 0,
+    max_last_updated_date: "2026-05-13",
+    source: "Oracle",
+    rows_ins: 125430,
+    rows_upd: 2451,
+    rows_del: 0
+  },
+  {
+    source_system: "Oracle",
+    load_freq: "Daily",
+    table_group: "Foundation",
+    tablename: "dim_customer_portfolio",
+    last_load: "2026-05-13 06:22",
+    alert: "OK",
+    days_since_last: 0,
+    max_last_updated_date: "2026-05-13",
+    source: "Oracle",
+    rows_ins: 88412,
+    rows_upd: 3120,
+    rows_del: 0
+  },
+  {
+    source_system: "Oracle",
+    load_freq: "Daily",
+    table_group: "WFS",
+    tablename: "fnd_wfs_crd_txn_dly",
+    last_load: "2026-05-11 23:40",
+    alert: "DELAYED",
+    days_since_last: 2,
+    max_last_updated_date: "2026-05-11",
+    source: "Oracle",
+    rows_ins: 0,
+    rows_upd: 0,
+    rows_del: 0
+  },
+  {
+    source_system: "Oracle",
+    load_freq: "Daily",
+    table_group: "WFS",
+    tablename: "fnd_wfs_crd_acc_dly",
+    last_load: "2026-05-13 01:15",
+    alert: "OK",
+    days_since_last: 0,
+    max_last_updated_date: "2026-05-13",
+    source: "Oracle",
+    rows_ins: 44501,
+    rows_upd: 912,
+    rows_del: 4
+  },
+  {
+    source_system: "Oracle",
+    load_freq: "Daily",
+    table_group: "Location",
+    tablename: "dim_location",
+    last_load: "2026-05-13 05:31",
+    alert: "OK",
+    days_since_last: 0,
+    max_last_updated_date: "2026-05-13",
+    source: "MDM",
+    rows_ins: 14,
+    rows_upd: 3,
+    rows_del: 0
+  },
 
-    const loadTimingData = [
-      {
-        source_system: "Oracle",
-        tablename: "dim_customer",
-        expected_time: "06:00",
-        current_avg_time: "06:12",
-        max_load_time: "06:45",
-        status: "OK"
-      },
-      {
-        source_system: "Oracle",
-        tablename: "fnd_wfs_crd_txn_dly",
-        expected_time: "23:30",
-        current_avg_time: "23:55",
-        max_load_time: "02:10",
-        status: "DELAYED"
-      },
-      {
-        source_system: "Oracle",
-        tablename: "dim_location",
-        expected_time: "05:00",
-        current_avg_time: "05:23",
-        max_load_time: "05:55",
-        status: "OK"
-      },
-      {
-        source_system: "Redshift",
-        tablename: "mrt_sales_basket_item",
-        expected_time: "07:00",
-        current_avg_time: "07:18",
-        max_load_time: "08:05",
-        status: "OK"
-      },
-      {
-        source_system: "Redshift",
-        tablename: "mrt_sales_digital_basket",
-        expected_time: "22:00",
-        current_avg_time: "22:42",
-        max_load_time: "23:30",
-        status: "WARNING"
-      }
-    ];
+  {
+    source_system: "Redshift",
+    load_freq: "Daily",
+    table_group: "POS",
+    tablename: "mrt_sales_basket_item",
+    last_load: "2026-05-13 07:01",
+    alert: "OK",
+    days_since_last: 0,
+    max_last_updated_date: "2026-05-13",
+    source: "Redshift",
+    rows_ins: 2356721,
+    rows_upd: 0,
+    rows_del: 0
+  },
+  {
+    source_system: "Redshift",
+    load_freq: "Daily",
+    table_group: "Digital",
+    tablename: "mrt_sales_digital_basket",
+    last_load: "2026-05-12 22:15",
+    alert: "WARNING",
+    days_since_last: 1,
+    max_last_updated_date: "2026-05-12",
+    source: "Redshift",
+    rows_ins: 88321,
+    rows_upd: 401,
+    rows_del: 0
+  },
+  {
+    source_system: "Redshift",
+    load_freq: "Daily",
+    table_group: "Item",
+    tablename: "dim_item_hist",
+    last_load: "2026-05-13 04:40",
+    alert: "OK",
+    days_since_last: 0,
+    max_last_updated_date: "2026-05-13",
+    source: "Redshift",
+    rows_ins: 7622,
+    rows_upd: 890,
+    rows_del: 2
+  },
+  {
+    source_system: "Redshift",
+    load_freq: "Daily",
+    table_group: "WFS",
+    tablename: "dim_wfs_all_prod",
+    last_load: "2026-05-13 02:25",
+    alert: "OK",
+    days_since_last: 0,
+    max_last_updated_date: "2026-05-13",
+    source: "Redshift",
+    rows_ins: 5220,
+    rows_upd: 611,
+    rows_del: 1
+  },
+  {
+    source_system: "Redshift",
+    load_freq: "Daily",
+    table_group: "WFS",
+    tablename: "fnd_wfs_tran_day",
+    last_load: "2026-05-12 23:58",
+    alert: "WARNING",
+    days_since_last: 1,
+    max_last_updated_date: "2026-05-12",
+    source: "Redshift",
+    rows_ins: 190445,
+    rows_upd: 0,
+    rows_del: 0
+  }
+];
 
-    const logsData = [
-      {
-        source_system: "Oracle",
-        proc_name: "sp_ora_load",
-        tablename: "fnd_wfs_crd_txn_dly",
-        status: "FAILED",
-        duration: "00:00:51",
-        inserted_rows: 0,
-        start_time: "2026-05-11 23:40",
-        end_time: "2026-05-11 23:41"
-      },
-      {
-        source_system: "Oracle",
-        proc_name: "sp_ora_load",
-        tablename: "dim_customer",
-        status: "SUCCESS",
-        duration: "00:02:44",
-        inserted_rows: 125430,
-        start_time: "2026-05-13 06:10",
-        end_time: "2026-05-13 06:13"
-      },
-      {
-        source_system: "Redshift",
-        proc_name: "sp_rs_transform",
-        tablename: "mrt_sales_basket_item",
-        status: "SUCCESS",
-        duration: "00:04:12",
-        inserted_rows: 2356721,
-        start_time: "2026-05-13 07:01",
-        end_time: "2026-05-13 07:05"
-      }
-    ];
+const loadTimingData = [
+  {
+    source_system: "Oracle",
+    tablename: "dim_customer",
+    expected_time: "06:00",
+    current_avg_time: "06:12",
+    max_load_time: "06:45",
+    status: "OK"
+  },
+  {
+    source_system: "Oracle",
+    tablename: "dim_customer_portfolio",
+    expected_time: "06:15",
+    current_avg_time: "06:28",
+    max_load_time: "07:05",
+    status: "OK"
+  },
+  {
+    source_system: "Oracle",
+    tablename: "fnd_wfs_crd_txn_dly",
+    expected_time: "23:30",
+    current_avg_time: "23:55",
+    max_load_time: "02:10",
+    status: "DELAYED"
+  },
+  {
+    source_system: "Oracle",
+    tablename: "fnd_wfs_crd_acc_dly",
+    expected_time: "01:00",
+    current_avg_time: "01:21",
+    max_load_time: "01:55",
+    status: "OK"
+  },
+  {
+    source_system: "Oracle",
+    tablename: "dim_location",
+    expected_time: "05:00",
+    current_avg_time: "05:23",
+    max_load_time: "05:55",
+    status: "OK"
+  },
+
+  {
+    source_system: "Redshift",
+    tablename: "mrt_sales_basket_item",
+    expected_time: "07:00",
+    current_avg_time: "07:18",
+    max_load_time: "08:05",
+    status: "OK"
+  },
+  {
+    source_system: "Redshift",
+    tablename: "mrt_sales_digital_basket",
+    expected_time: "22:00",
+    current_avg_time: "22:42",
+    max_load_time: "23:30",
+    status: "WARNING"
+  },
+  {
+    source_system: "Redshift",
+    tablename: "dim_item_hist",
+    expected_time: "04:30",
+    current_avg_time: "04:45",
+    max_load_time: "05:10",
+    status: "OK"
+  },
+  {
+    source_system: "Redshift",
+    tablename: "dim_wfs_all_prod",
+    expected_time: "02:00",
+    current_avg_time: "02:22",
+    max_load_time: "03:00",
+    status: "OK"
+  },
+  {
+    source_system: "Redshift",
+    tablename: "fnd_wfs_tran_day",
+    expected_time: "23:30",
+    current_avg_time: "00:10",
+    max_load_time: "01:20",
+    status: "WARNING"
+  }
+];
+
+const logsData = [
+  {
+    source_system: "Oracle",
+    proc_name: "sp_ora_load",
+    tablename: "dim_customer",
+    status: "SUCCESS",
+    duration: "00:02:44",
+    inserted_rows: 125430,
+    start_time: "2026-05-13 06:10",
+    end_time: "2026-05-13 06:13"
+  },
+  {
+    source_system: "Oracle",
+    proc_name: "sp_ora_load",
+    tablename: "dim_customer_portfolio",
+    status: "SUCCESS",
+    duration: "00:03:20",
+    inserted_rows: 88412,
+    start_time: "2026-05-13 06:22",
+    end_time: "2026-05-13 06:25"
+  },
+  {
+    source_system: "Oracle",
+    proc_name: "sp_ora_load",
+    tablename: "fnd_wfs_crd_txn_dly",
+    status: "FAILED",
+    duration: "00:00:51",
+    inserted_rows: 0,
+    start_time: "2026-05-11 23:40",
+    end_time: "2026-05-11 23:41"
+  },
+  {
+    source_system: "Oracle",
+    proc_name: "sp_ora_load",
+    tablename: "fnd_wfs_crd_acc_dly",
+    status: "SUCCESS",
+    duration: "00:04:01",
+    inserted_rows: 44501,
+    start_time: "2026-05-13 01:15",
+    end_time: "2026-05-13 01:19"
+  },
+  {
+    source_system: "Oracle",
+    proc_name: "sp_mdm_load",
+    tablename: "dim_location",
+    status: "SUCCESS",
+    duration: "00:00:30",
+    inserted_rows: 14,
+    start_time: "2026-05-13 05:31",
+    end_time: "2026-05-13 05:32"
+  },
+
+  {
+    source_system: "Redshift",
+    proc_name: "sp_rs_transform",
+    tablename: "mrt_sales_basket_item",
+    status: "SUCCESS",
+    duration: "00:04:12",
+    inserted_rows: 2356721,
+    start_time: "2026-05-13 07:01",
+    end_time: "2026-05-13 07:05"
+  },
+  {
+    source_system: "Redshift",
+    proc_name: "sp_rs_transform",
+    tablename: "mrt_sales_digital_basket",
+    status: "WARNING",
+    duration: "00:07:44",
+    inserted_rows: 88321,
+    start_time: "2026-05-12 22:15",
+    end_time: "2026-05-12 22:23"
+  },
+  {
+    source_system: "Redshift",
+    proc_name: "sp_rs_dim_load",
+    tablename: "dim_item_hist",
+    status: "SUCCESS",
+    duration: "00:01:51",
+    inserted_rows: 7622,
+    start_time: "2026-05-13 04:40",
+    end_time: "2026-05-13 04:42"
+  },
+  {
+    source_system: "Redshift",
+    proc_name: "sp_rs_dim_load",
+    tablename: "dim_wfs_all_prod",
+    status: "SUCCESS",
+    duration: "00:02:15",
+    inserted_rows: 5220,
+    start_time: "2026-05-13 02:25",
+    end_time: "2026-05-13 02:27"
+  },
+  {
+    source_system: "Redshift",
+    proc_name: "sp_rs_transform",
+    tablename: "fnd_wfs_tran_day",
+    status: "WARNING",
+    duration: "00:09:12",
+    inserted_rows: 190445,
+    start_time: "2026-05-12 23:58",
+    end_time: "2026-05-13 00:07"
+  }
+];
 
     const table = document.getElementById("data-table");
     const tableTitle = document.getElementById("table-title");
